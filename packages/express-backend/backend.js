@@ -1,5 +1,7 @@
 // backend.js
 import express from "express";
+import cors from "cors";
+
 
 const users = {
     users_list: [
@@ -34,6 +36,7 @@ const users = {
 const app = express();
 const port = 8000;
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -46,9 +49,20 @@ const findUserByName = (name) => {
   );
 };
 
+const finduserByJobName = (name, job) => {
+  return users["users_list"].filter(
+    (user) => (user["name"] === name && user["job"] === job)
+  );
+};
+
 app.get("/users", (req, res) => {
   const name = req.query.name;
-  if (name != undefined) {
+  const job = req.query.job;
+  if (name != undefined && job != undefined) {
+    let result = finduserByJobName(name, job);
+    result = { users_list: result };
+    res.send(result);
+  } else if (name != undefined){
     let result = findUserByName(name);
     result = { users_list: result };
     res.send(result);
@@ -70,6 +84,17 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
+app.delete("/users/:id", (req, res) => {
+  const id = req.params["id"]; //or req.params.id
+  if (id === undefined) {
+    res.status(404).send("Resource not found.");
+  } else {
+    let index = users["users_list"].findIndex(user => user["id"] === id);
+    users["users_list"].splice(index, 1);
+    res.send("Deleted User with ID ${id}");
+  }
+});
+
 const addUser = (user) => {
   users["users_list"].push(user);
   return user;
@@ -77,8 +102,11 @@ const addUser = (user) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
+  let id = Math.floor(Math.random() * 100000).toString();
+  userToAdd["id"] = id;
   addUser(userToAdd);
-  res.send();
+  res.body = userToAdd;
+  res.status(201).send();
 });
 
 app.listen(port, () => {
