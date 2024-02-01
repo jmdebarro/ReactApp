@@ -85,15 +85,17 @@ app.get("/users/:id", (req, res) => {
 });
 
 app.delete("/users/:id", (req, res) => {
-  const id = req.params["id"]; //or req.params.id
-  if (id === undefined) {
-    res.status(404).send("Resource not found.");
-  } else {
-    let index = users["users_list"].findIndex(user => user["id"] === id);
+  const id = req.params["id"];
+  const index = users["users_list"].findIndex(user => user["id"] === id);
+  if (index !== -1) {
     users["users_list"].splice(index, 1);
-    res.send("Deleted User with ID ${id}");
+    res.status(204).send();
+    return;
   }
+    res.status(404).send("Resource not found.");
 });
+
+
 
 const addUser = (user) => {
   users["users_list"].push(user);
@@ -102,11 +104,10 @@ const addUser = (user) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  let id = Math.floor(Math.random() * 100000).toString();
+  var id = Math.floor(Math.random() * 100000).toString();
   userToAdd["id"] = id;
-  addUser(userToAdd);
-  res.body = userToAdd;
-  res.status(201).send();
+  const user = addUser(userToAdd);
+  res.status(201).send(user);
 });
 
 app.listen(port, () => {
