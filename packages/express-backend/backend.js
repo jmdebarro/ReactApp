@@ -10,14 +10,6 @@ import {
   findUserByJob
 } from "./user-services.js";
 
-mongoose.set("debug", true);
-
-mongoose
-  .connect("mongodb://localhost/27017/", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .catch((error) => console.log(error));
 
 const app = express();
 const port = 8000;
