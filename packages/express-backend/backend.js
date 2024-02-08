@@ -18,6 +18,9 @@ const port = 8000;
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("Hello Mr. Tang...");
+})
 
 app.get("/users", (req, res) => {
   const name = req.query.name;
