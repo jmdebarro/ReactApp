@@ -2,6 +2,7 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+import userModel from "./user.js";
 import {
   addUser,
   getUsers,
@@ -50,7 +51,9 @@ app.get("/users/:id", (req, res) => {
 
 app.delete("/users/:id", (req, res) => {
   const id = req.params["id"];
-  mongoose.findByIdAndDelete(id).then((user) => {
+  console.log(id);
+  console.log("\n\n\n");
+  userModel.findByIdAndDelete(id).then((user) => {
     if (user === undefined) {
       res.status(404).send("User could not be found");
     } else {
